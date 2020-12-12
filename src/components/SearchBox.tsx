@@ -1,4 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
@@ -8,7 +9,7 @@ import getSimilarRecommendations from '../api/recommendation';
 const SearchBoxContainer = styled.div`
   width: 60%;
   height: 40px;
-  // display: flex;
+  display: flex;
   border: 1px solid #000;
   margin: auto;
 `;
@@ -38,6 +39,7 @@ function SearchBox(): JSX.Element {
       Type: '',
     },
   ]);
+  const history = useHistory();
 
   const fetchSimilar = () => {
     getSimilarRecommendations(searchValue).then((response) =>
@@ -66,8 +68,10 @@ function SearchBox(): JSX.Element {
       <SearchResults>
         {searchValue &&
           searchResults.map((result, i) => {
+            const title = result.Name;
+
             return (
-              <p key={i}>
+              <p key={i} onClick={(): void => history.push(`/music/${title}`)}>
                 {result.Name} ({result.Type})
               </p>
             );
