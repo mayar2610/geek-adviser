@@ -1,9 +1,11 @@
 import React from 'react';
 import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import styled from 'styled-components';
 
+import configureStore from './store/configureStore';
 import SearchBox from './components/SearchBox';
-import MusicDeatils from './components/MusicDetails';
+import RecommendationDetails from './components/RecommendationDetails';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -11,31 +13,28 @@ const Wrapper = styled.div`
   background-color: #fff;
 `;
 
-function App(): JSX.Element {
+const store = configureStore();
+
+const App = (): JSX.Element => {
   return (
-    <Wrapper>
-      <HashRouter>
-        <Switch>
-          <Route path="/" exact>
-            <SearchBox />
-          </Route>
-          <Route path="/music" exact>
-            <SearchBox />
-          </Route>
-          <Route path="/music/:title" exact>
-            <MusicDeatils />
-          </Route>
-          <Route path="/movies" exact>
-            <SearchBox />
-          </Route>
-          <Route path="/movie/:title" exact>
-            <MusicDeatils />
-          </Route>
-          <Redirect to="/" />
-        </Switch>
-      </HashRouter>
-    </Wrapper>
+    <Provider store={store}>
+      <Wrapper>
+        <HashRouter>
+          <Switch>
+            <Route path="/" exact>
+              <SearchBox />
+            </Route>
+            <Route path="/music" exact />
+            <Route path="/movies" exact />
+            <Route path="/recommendation/:title" exact>
+              <RecommendationDetails />
+            </Route>
+            <Redirect to="/" />
+          </Switch>
+        </HashRouter>
+      </Wrapper>
+    </Provider>
   );
-}
+};
 
 export default App;

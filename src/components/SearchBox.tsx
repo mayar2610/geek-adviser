@@ -1,10 +1,14 @@
 import React, { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 
-import getSimilarRecommendations from '../api/recommendation';
+//import getSimilarRecommendations from '../api/recommendation';
+
+import { getRecommendations } from '../store/actions';
+import { rootState } from '../store/rootReducer';
 
 const SearchBoxContainer = styled.div`
   width: 60%;
@@ -32,19 +36,16 @@ const SearchResults = styled.div`
 `;
 
 function SearchBox(): JSX.Element {
+  const recommendations = useSelector(
+    (state: rootState) => state.recommendations.recommendations,
+  );
   const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearhResults] = useState([
-    {
-      Name: '',
-      Type: '',
-    },
-  ]);
+
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const fetchSimilar = () => {
-    getSimilarRecommendations(searchValue).then((response) =>
-      setSearhResults(response),
-    );
+    dispatch(getRecommendations(searchValue));
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -67,12 +68,15 @@ function SearchBox(): JSX.Element {
       </SearchBoxContainer>
       <SearchResults>
         {searchValue &&
-          searchResults.map((result, i) => {
+          recommendations.map((result, i) => {
             const title = result.Name;
 
             return (
-              <p key={i} onClick={(): void => history.push(`/music/${title}`)}>
-                {result.Name} ({result.Type})
+              <p
+                key={i}
+                onClick={(): void => history.push(`/recommendation/${title}`)}
+              >
+                {result.Name}
               </p>
             );
           })}
@@ -81,4 +85,9 @@ function SearchBox(): JSX.Element {
   );
 }
 
-export default SearchBox;
+const mapStateToProps = (state: { recommendations: any }) => ({
+  recommendations: state.recommendations,
+});
+const mapDispatchToProps = { getRecommendations };
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);
